@@ -1,0 +1,16 @@
+server {
+    listen 80;
+    listen [::]:80;
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    server_name magento2.test;
+
+    ssl_certificate /usr/local/share/ssl/magento2.test.pem;
+    ssl_certificate_key /usr/local/share/ssl/magento2.test-key.pem;
+
+    location / {
+        proxy_pass http://127.0.0.1:8011/;
+        include /etc/nginx/proxy_params;
+    }
+}

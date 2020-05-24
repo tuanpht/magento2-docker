@@ -1,0 +1,72 @@
+version: "3"
+
+services:
+    php:
+        build:
+            context: ./dev/docker/images/php
+        restart: always
+        working_dir: /var/www/html/magento
+        volumes:
+            - ./:/var/www/html/magento
+        expose:
+            - "9000"
+    nginx:
+        restart: always
+        image: nginx:latest
+        working_dir: /var/www/html/magento
+        volumes:
+            - ./:/var/www/html/magento
+            - ./dev/docker/images/nginx/magento.conf:/etc/nginx/conf.d/default.conf
+        expose:
+            - "80"
+    mysql:
+        restart: always
+        image: mysql:5.7
+        command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+        volumes:
+            - ./dev/docker/images/mysql/initdb:/docker-entrypoint-initdb.d
+            - ./dev/docker/data/mysql:/var/lib/mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+        expose:
+            - "3306"
+    varnish:
+        restart: always
+        image: varnish:6
+        volumes:
+            - ./dev/docker/images/varnish/default.vcl:/etc/varnish/default.vcl
+        expose:
+            - "80"
+        ports:
+            - "8011:80"
+    redis:
+        restart: always
+        image: redis
+        expose:
+            - "6379"
+    mail-server:
+        restart: always
+        image: mailhog/mailhog
+        user: root # Needed if using maildir
+        environment:
+            MH_STORAGE: maildir
+            MH_MAILDIR_PATH: /var/data/mailhog
+        volumes:
+            - ./dev/docker/data/mailhog:/var/data/mailhog
+        expose:
+            - "1025" # SMTP Server to send mail
+            - "8025" # HTTP Server to check mail
+        ports:
+            - "8022:8025"
+    adminer:
+        restart: always
+        image: adminer
+        volumes:
+            - ./dev/docker/images/adminer/php-custom.ini:/usr/local/etc/php/conf.d/php-custom.ini
+        expose:
+            - "8080"
+        ports:
+            - "8088:8080"
+        environment:
+            ADMINER_DEFAULT_SERVER: mysql
+            ADMINER_DESIGN: "pappu687"
