@@ -34,8 +34,8 @@ docker-compose up -d
 
 Prepare your magento installation:
 ```bash
-# Enter `php` container with user `magento`
-docker-compose exec -u magento php bash
+# Enter `php` container
+docker-compose exec php bash
 
 cd /var/www/html/magento
 

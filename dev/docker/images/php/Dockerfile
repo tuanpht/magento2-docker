@@ -47,6 +47,16 @@ RUN chmod 600 /var/spool/cron/crontabs/magento && chgrp crontab /var/spool/cron/
 # Custom entrypoint to start cron service
 ADD custom-entrypoint.sh /usr/local/bin/
 
+# Add virmrc
+ADD .vimrc /root/.vimrc
+ADD .vimrc /home/magento/.vimrc
+# Add some alias
+ADD .bash_aliases /usr/local/share/.bash_aliases
+# Improve shell prompt: [+] root @ /var/www/html/magento
+RUN printf '\nfunction nonzero_return() { RETVAL=$? ; [ $RETVAL -ne 0 ] && echo "[exit code: $RETVAL]" ; }\n \
+    PS1="\n\[\e[37m\][+]\[\e[m\]\[\e[m\] \[\e[32m\]\u\[\e[m\] \[\e[34m\]@\[\e[m\] \[\e[36m\]\w \[\e[31m\]\`nonzero_return\`\[\e[m\]\n\\\$ > "\n \
+    . /usr/local/share/.bash_aliases\n' | tee --append /etc/bash.bashrc /home/magento/.bashrc
+
 ENTRYPOINT [ "/usr/local/bin/custom-entrypoint.sh" ]
 
 CMD ["php-fpm"]
