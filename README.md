@@ -74,5 +74,5 @@ php bin/magento config:set general/locale/code en_US
 php bin/magento config:set general/locale/timezone Asia/Ho_Chi_Minh
 php bin/magento config:set currency/options/base VND
 # Flush cache
-php bin/magento config:set cache:flush
+php bin/magento cache:flush
 ```
