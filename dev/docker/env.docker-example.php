@@ -122,7 +122,7 @@ return [
     ],
     'http_cache_hosts' => [
         [
-            'host' => 'nginx',
+            'host' => 'varnish',
             'port' => '80',
         ],
     ],
