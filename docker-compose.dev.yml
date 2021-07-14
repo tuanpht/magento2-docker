@@ -4,6 +4,10 @@ services:
     php:
         build:
             context: ./dev/docker/images/php
+        # Or use prebuilt docker image => https://hub.docker.com/r/sun7pro/magento2-php-fpm/
+        # See php support version: https://devdocs.magento.com/guides/v2.3/install-gde/system-requirements.html
+        # image: sun7pro/magento2-php-fpm:php7.3
+        # image: sun7pro/magento2-php-fpm:php7.4
         restart: always
         working_dir: /var/www/html/magento
         volumes:
