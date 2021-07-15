@@ -5,44 +5,60 @@
 Reference: https://viblo.asia/p/magento-2-docker-environment-eW65Gvx9lDO
 
 # Usage
-Clone or download:
-```bash
-git clone https://github.com/tuanpht/magento2-docker.git
+
+You can use for existing project or create new project from composer.
+
+## Create Magento project from composer
+
+Using docker to using `composer` without install PHP and composer in host machine:
+
+```
+mkdir magento2-test
+cd magento2-test
+docker run -u magento -it --rm -v $(pwd):/var/www/html sun7pro/magento2-php-fpm:php7.4-composer2 bash
+composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition:2.3.7 .
+exit
 ```
 
 Prepare you HTTPS and custom domain => See: [./vhosts/README.md](./vhosts/README.md)
 
 => Example: https://magento2.test
 
-Copy docker files to magento project folder:
+Clone or download:
+
 ```bash
-cd magento2-docker.git
+git clone https://github.com/tuanpht/magento2-docker.git
+```
+
+Copy docker files to magento project folder:
+
+```bash
+cd magento2-docker
 cp -r dev/docker ~/Project/magento2-test/dev/
 cp docker-compose.dev.yml ~/Project/magento2-test/docker-compose.yml
 ```
 
-Update or copy file env for docker:
-```bash
-cp dev/docker/env.docker-example.php ~/Project/magento2-test/app/etc/env.php
-```
-
 Up and running:
+
 ```bash
 cd ~/Project/magento2-test
 docker-compose up -d
 ```
 
 Prepare your magento installation:
+
 ```bash
 # Enter `php` container
 docker-compose exec php bash
-
-cd /var/www/html/magento
 
 # Setup file permissions, except folder `dev/docker`
 find var generated vendor pub/static pub/media app/etc -type f -exec chmod g+w {} + \
     && find var generated vendor pub/static pub/media app/etc -type d -exec chmod g+ws {} + \
     && chown -R :www-data $(ls -Idev/docker)
+
+exit
+
+docker-compose exec -u magento php bash
 
 # Run this to install db if it is new installation,
 # or you can import your SQL in adminer: http://localhost:8088
@@ -51,7 +67,6 @@ php bin/magento setup:install \
     --db-name=magento_db \
     --db-user=magento \
     --db-password=secret \
-    --backend-frontname=admin_mn \
     --admin-firstname=Super \
     --admin-lastname=Admin \
     --admin-email=admin@example.com \
@@ -63,16 +78,21 @@ php bin/magento setup:install \
 php bin/magento config:set system/full_page_cache/caching_application 2
 php bin/magento config:set system/full_page_cache/varnish/backend_host nginx
 php bin/magento config:set system/full_page_cache/varnish/backend_port 80
+
 # Base url and https
 php bin/magento config:set web/unsecure/base_url http://magento2.test/
 php bin/magento config:set web/secure/base_url https://magento2.test/
 php bin/magento config:set web/secure/use_in_frontend 1
 php bin/magento config:set web/secure/use_in_adminhtml 1
 php bin/magento config:set web/seo/use_rewrites 1
+
 # Locale, timezone, currency
 php bin/magento config:set general/locale/code en_US
 php bin/magento config:set general/locale/timezone Asia/Ho_Chi_Minh
 php bin/magento config:set currency/options/base VND
+
 # Flush cache
 php bin/magento cache:flush
 ```
+
+Check example env `dev/docker/env.docker-example.php` to update `app/etc/env.php` to config Redis cache, developer mode...

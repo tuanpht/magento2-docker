@@ -8,6 +8,7 @@ services:
         # See php support version: https://devdocs.magento.com/guides/v2.3/install-gde/system-requirements.html
         # image: sun7pro/magento2-php-fpm:php7.3
         # image: sun7pro/magento2-php-fpm:php7.4
+        # image: sun7pro/magento2-php-fpm:php7.4-composer2
         restart: always
         working_dir: /var/www/html/magento
         volumes:
